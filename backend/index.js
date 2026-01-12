@@ -1,10 +1,11 @@
 const express = require("express");
 const client = require("prom-client");
 
-const app = express();   // ✅ app defined FIRST
+const app = express();
 const PORT = 5000;
 
-// Prometheus default metrics
+/* ---------------- PROMETHEUS METRICS ---------------- */
+
 client.collectDefaultMetrics();
 
 const httpRequestsTotal = new client.Counter({
@@ -12,17 +13,29 @@ const httpRequestsTotal = new client.Counter({
   help: "Total number of HTTP requests"
 });
 
-// ---------------- CPU STRESS LOGIC ----------------
+/* ---------------- CPU STRESS LOGIC (STABLE) ---------------- */
 
-let stressing = false;
+let stressInterval = null;
 
-function burnCPU() {
-  if (!stressing) return;
-  Math.sqrt(Math.random());
-  setImmediate(burnCPU);
+function startStress() {
+  if (stressInterval) return;
+
+  stressInterval = setInterval(() => {
+    const end = Date.now() + 200; // 200ms CPU burn
+    while (Date.now() < end) {
+      Math.sqrt(Math.random());
+    }
+  }, 300); // every 300ms
 }
 
-// ---------------- ROUTES ----------------
+function stopStress() {
+  if (stressInterval) {
+    clearInterval(stressInterval);
+    stressInterval = null;
+  }
+}
+
+/* ---------------- ROUTES ---------------- */
 
 app.get("/", (req, res) => {
   httpRequestsTotal.inc();
@@ -35,12 +48,11 @@ app.get("/stress", (req, res) => {
   const level = req.query.level || "low";
 
   if (level === "high") {
-    stressing = true;
-    burnCPU();
+    startStress();
     res.send("High CPU stress started");
   } 
   else if (level === "stop") {
-    stressing = false;
+    stopStress();
     res.send("CPU stress stopped");
   } 
   else {
@@ -53,7 +65,7 @@ app.get("/metrics", async (req, res) => {
   res.end(await client.register.metrics());
 });
 
-// ---------------- START SERVER ----------------
+/* ---------------- START SERVER ---------------- */
 
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
