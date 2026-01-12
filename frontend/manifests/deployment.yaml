@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: mdcontainerregistry.azurecr.io/frontend:v2
+        image: mdcontainerregistry.azurecr.io/frontend-b:v1
         ports:
         - containerPort: 80
