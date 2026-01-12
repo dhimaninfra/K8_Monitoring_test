@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: mdcontainerregistry.azurecr.io/backend-stress:v1
+        image: mdcontainerregistry.azurecr.io/backend-final:v1
         ports:
         - containerPort: 5000
         resources:
