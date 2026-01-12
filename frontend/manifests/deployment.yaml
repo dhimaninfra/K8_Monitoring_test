@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: yourdockerhub/frontend:latest
+        image: mdcontainerregistry.azurecr.io/frontend:v1
         ports:
         - containerPort: 80
