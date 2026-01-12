@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: yourdockerhub/backend:latest
+        image: mdcontainerregistry.azurecr.io/backend:v1
         ports:
         - containerPort: 5000
         resources:
